@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>検査値リファレンス（画面イメージ）</title>
+<style>
+:root{
+  --paper:#F2F4F3;
+  --ink:#15201E;
+  --ink-soft:#5A6B66;
+  --line:#D3DAD7;
+  --slab:#FFFFFF;
+  --deep:#14524A;
+  --deep-soft:#E3EDEA;
+  --high:#8C3A2E;
+  --high-bg:#F7EAE7;
+  --low:#2B4B7A;
+  --low-bg:#E8EDF5;
+  --note:#6B4A12;
+  --note-bg:#F5EEDC;
+  --note-line:#C9A961;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Meiryo",sans-serif;
+  font-feature-settings:"palt";
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+
+.mock-banner{
+  background:var(--ink);
+  color:var(--paper);
+  font-size:12px;
+  letter-spacing:.08em;
+  padding:7px 16px;
+  text-align:center;
+}
+
+.topbar{
+  background:var(--slab);
+  border-bottom:1px solid var(--line);
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.brand{
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.06em;
+  color:var(--deep);
+  white-space:nowrap;
+}
+.brand span{
+  display:block;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:.14em;
+  color:var(--ink-soft);
+}
+
+.searchwrap{flex:1;min-width:220px;position:relative;}
+#search{
+  width:100%;
+  font-family:inherit;
+  font-size:19px;
+  padding:11px 14px 11px 40px;
+  border:2px solid var(--deep);
+  border-radius:3px;
+  background:var(--paper);
+  color:var(--ink);
+}
+#search:focus{outline:3px solid var(--deep-soft);outline-offset:1px;}
+.searchwrap::before{
+  content:"⌕";
+  position:absolute;
+  left:14px;top:50%;
+  transform:translateY(-52%);
+  font-size:21px;
+  color:var(--deep);
+  pointer-events:none;
+}
+
+.reload{
+  font-family:inherit;font-size:12px;
+  color:var(--ink-soft);
+  border:1px solid var(--line);
+  background:var(--slab);
+  padding:8px 12px;border-radius:3px;cursor:pointer;
+  white-space:nowrap;
+}
+
+.shell{
+  display:grid;
+  grid-template-columns:274px 1fr;
+  gap:20px;
+  max-width:1180px;
+  margin:0 auto;
+  padding:20px;
+  align-items:start;
+}
+
+/* ---- 左：疾患タグ＋結果 ---- */
+.panel{
+  background:var(--slab);
+  border:1px solid var(--line);
+  border-radius:4px;
+  overflow:hidden;
+}
+.panel-h{
+  font-size:11px;
+  letter-spacing:.16em;
+  color:var(--ink-soft);
+  padding:11px 14px;
+  border-bottom:1px solid var(--line);
+  background:var(--paper);
+}
+
+.tag-list{padding:8px;}
+.tag-btn{
+  display:flex;justify-content:space-between;align-items:center;
+  width:100%;
+  font-family:inherit;font-size:14px;
+  text-align:left;
+  padding:8px 10px;
+  border:none;background:none;cursor:pointer;
+  color:var(--ink);border-radius:3px;
+}
+.tag-btn:hover{background:var(--deep-soft);}
+.tag-btn.on{background:var(--deep);color:#fff;}
+.tag-btn .n{font-size:11px;opacity:.65;font-variant-numeric:tabular-nums;}
+
+.auto-note{
+  font-size:11px;line-height:1.6;
+  color:var(--ink-soft);
+  padding:10px 14px;
+  border-top:1px dashed var(--line);
+}
+
+.hits{padding:8px;}
+.hit{
+  width:100%;text-align:left;
+  font-family:inherit;
+  border:none;background:none;cursor:pointer;
+  padding:9px 10px;border-radius:3px;
+  border-left:3px solid transparent;
+}
+.hit:hover{background:var(--deep-soft);}
+.hit.on{background:var(--deep-soft);border-left-color:var(--deep);}
+.hit b{display:block;font-size:15px;font-weight:600;}
+.hit i{display:block;font-style:normal;font-size:11px;color:var(--ink-soft);margin-top:1px;}
+
+/* ---- 右：カード ---- */
+.card{
+  background:var(--slab);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:26px 28px 30px;
+}
+
+.card-head{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding-bottom:12px;
+  border-bottom:2px solid var(--deep);
+}
+.card-head h1{font-size:31px;line-height:1.25;letter-spacing:.01em;}
+.abbr{
+  font-size:13px;letter-spacing:.1em;
+  color:var(--deep);background:var(--deep-soft);
+  padding:3px 9px;border-radius:3px;
+}
+
+.ref{
+  display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;
+  margin-top:12px;
+}
+.ref .lbl{font-size:11px;letter-spacing:.14em;color:var(--ink-soft);}
+.ref .val{
+  font-size:21px;font-weight:600;
+  font-variant-numeric:tabular-nums;
+  white-space:pre-line;
+}
+.ref-warn{font-size:11px;color:var(--ink-soft);margin-top:5px;}
+
+.oneline{
+  margin-top:18px;
+  font-size:15px;
+  color:var(--ink-soft);
+  padding-left:12px;
+  border-left:2px solid var(--line);
+}
+
+/* 患者説明例＝主役 */
+.say{
+  margin-top:22px;
+  background:var(--deep);
+  color:#F4F8F7;
+  border-radius:4px;
+  padding:20px 24px 22px;
+}
+.say-lbl{
+  font-size:11px;letter-spacing:.18em;
+  opacity:.72;
+  display:flex;align-items:center;gap:7px;
+  margin-bottom:10px;
+}
+.say p{
+  font-size:19px;
+  line-height:2.05;
+  letter-spacing:.02em;
+}
+.say p + p{margin-top:12px;}
+
+/* 高値／低値 */
+.split{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-top:20px;
+}
+.hl{border-radius:4px;padding:14px 16px;}
+.hl.up{background:var(--high-bg);}
+.hl.dn{background:var(--low-bg);}
+.hl h3{font-size:13px;letter-spacing:.1em;margin-bottom:8px;}
+.hl.up h3{color:var(--high);}
+.hl.dn h3{color:var(--low);}
+.hl li{font-size:14px;list-style:none;padding-left:14px;position:relative;line-height:1.85;}
+.hl li::before{content:"";position:absolute;left:2px;top:.72em;width:5px;height:5px;border-radius:50%;}
+.hl.up li::before{background:var(--high);}
+.hl.dn li::before{background:var(--low);}
+
+/* 薬剤師補足＝自分用 */
+.mine{
+  margin-top:20px;
+  background:var(--note-bg);
+  border:1px solid var(--note-line);
+  border-left:5px solid var(--note-line);
+  border-radius:3px;
+  padding:14px 18px;
+}
+.mine h3{
+  font-size:12px;letter-spacing:.12em;color:var(--note);
+  display:flex;align-items:center;gap:7px;margin-bottom:7px;
+}
+.mine h3 em{
+  font-style:normal;font-size:10px;letter-spacing:.06em;
+  background:var(--note);color:var(--note-bg);
+  padding:2px 7px;border-radius:2px;
+}
+.mine li{font-size:14px;list-style:none;line-height:1.85;padding-left:14px;position:relative;color:#4A3A16;}
+.mine li::before{content:"–";position:absolute;left:1px;}
+
+.chips{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+.chips .lbl{font-size:11px;letter-spacing:.14em;color:var(--ink-soft);margin-right:3px;}
+.chip{
+  font-family:inherit;font-size:13px;
+  border:1px solid var(--deep);color:var(--deep);
+  background:none;border-radius:99px;padding:4px 13px;cursor:pointer;
+}
+.chip:hover{background:var(--deep);color:#fff;}
+
+/* 0件 */
+.empty{
+  background:var(--slab);border:1px solid var(--line);
+  border-radius:4px;padding:44px 28px;text-align:center;
+}
+.empty .q{font-size:25px;font-weight:600;margin-bottom:6px;}
+.empty .sub{font-size:14px;color:var(--ink-soft);margin-bottom:22px;}
+.addbtn{
+  font-family:inherit;font-size:15px;font-weight:600;
+  background:var(--deep);color:#fff;border:none;
+  padding:13px 26px;border-radius:3px;cursor:pointer;
+}
+.addbtn:hover{background:#0E3D37;}
+.empty .why{font-size:12px;color:var(--ink-soft);margin-top:16px;line-height:1.8;}
+.done{color:var(--deep);font-size:15px;font-weight:600;}
+
+.memo{margin-top:20px;}
+.memo-row{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:9px 14px;border-top:1px solid var(--line);font-size:14px;
+}
+.memo-row .d{font-size:11px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.memo-foot{padding:12px 14px;border-top:1px solid var(--line);}
+.csv{
+  font-family:inherit;font-size:12px;
+  border:1px solid var(--deep);color:var(--deep);background:none;
+  padding:7px 14px;border-radius:3px;cursor:pointer;
+}
+
+@media(max-width:820px){
+  .shell{grid-template-columns:1fr;}
+  .split{grid-template-columns:1fr;}
+  .card{padding:20px 18px 24px;}
+  .card-head h1{font-size:26px;}
+  .say p{font-size:17px;line-height:1.95;}
+}
+</style>
+</head>
+<body>
+
+<div class="mock-banner">画面イメージ（モックアップ）／データは12枚のうち4枚のみ・Excel読込は未接続</div>
+
+<div class="topbar">
+  <div class="brand">検査値リファレンス<span>KENSA REFERENCE</span></div>
+  <div class="searchwrap">
+    <input id="search" type="text" placeholder="検査値名・略号・症状で検索（例：alb／むくみ／KL-6）" autocomplete="off">
+  </div>
+  <button class="reload">Excelを読み込み直す</button>
+</div>
+
+<div class="shell">
+  <div>
+    <div class="panel">
+      <div class="panel-h">疾患から引く</div>
+      <div class="tag-list" id="tags"></div>
+      <div class="auto-note">この一覧はExcelのタグ列から自動生成。行を足せば新しい疾患もここに出ます。</div>
+    </div>
+
+    <div class="panel" style="margin-top:16px;">
+      <div class="panel-h" id="hits-h">検査値から引く</div>
+      <div class="hits" id="hits"></div>
+    </div>
+
+    <div class="panel memo" id="memo-panel" style="display:none;">
+      <div class="panel-h">調べる予定リスト</div>
+      <div id="memo-list"></div>
+      <div class="memo-foot"><button class="csv">CSVで書き出す</button></div>
+    </div>
+  </div>
+
+  <div id="stage"></div>
+</div>
+
+<script>
+const DATA = [
+  {
+    name:"アルブミン", abbr:"Alb",
+    ref:"3.8〜5.2 g/dL\n低アルブミン血症：3.0 g/dL以下",
+    one:"体の栄養状態を見る目安になるたんぱく質。栄養を運び、水分を血管の中に保つ働きがある。",
+    say:["アルブミンは栄養の状態を見る数値です。","食事量が少なかったり、肝臓や腎臓、腸の働きが弱ると下がることがあります。","数値が低いと、むくみが出やすくなります。"],
+    up:["脱水（見かけ上の上昇）"],
+    dn:["低栄養（材料のたんぱく質不足）","肝機能低下（産生の工場が弱る）","ネフローゼ症候群（尿に漏れる）","クローン病（腸で吸収できない）"],
+    mine:["3前半は注意が必要なライン","低下すると足や顔のむくみ、だるさが出やすい","食事摂取量を必ず確認する"],
+    tags:["肝機能","栄養","腎機能"],
+    kw:"ALB アルブミン むくみ 浮腫 栄養状態 ネフローゼ だるい"
+  },
+  {
+    name:"BNP", abbr:"BNP",
+    ref:"18.4 pg/mL 以下",
+    one:"心臓が無理をしているときに出る物質。負担がかかると「助けてほしい」というサインとして血液中に出る。",
+    say:["この検査は、心臓がどれくらい頑張りすぎていないかを見るものです。","数値が高いと、心臓に少し負担がかかっているサインになります。"],
+    up:["心不全","心臓が疲れている状態","体に水分がたまりやすいとき"],
+    dn:["心臓の負担は少ない"],
+    mine:["腎機能が低いとBNPは高めに出ることがある","数値だけで判断せず、症状と合わせて評価する","息切れ・むくみ・体重増加があれば要注意"],
+    tags:["心不全","腎機能"],
+    kw:"BNP 心不全 息切れ むくみ 体重増加 心臓"
+  },
+  {
+    name:"HbA1c", abbr:"A1c",
+    ref:"4.6〜6.2 %（NGSP）\n糖尿病型：6.5% 以上",
+    one:"過去1〜2か月の血糖の平均を映す数値。採血直前の食事では動かない。",
+    say:["この数値は、この1〜2か月の血糖の平均を表しています。","今日の食事や昨日の体調では大きく動きません。","少しずつの積み重ねが反映される数値です。"],
+    up:["血糖コントロール不良","服薬アドヒアランス低下","食事量・間食の増加"],
+    dn:["低血糖の頻発","貧血・出血後（見かけ上の低下）"],
+    mine:["貧血や輸血後は実際より低く出る","前回値との差を必ず見る。単回の値では語らない","下がった時こそ具体的に何を変えたか聞く"],
+    tags:["糖尿病"],
+    kw:"HbA1c A1c ヘモグロビンエーワンシー 血糖 糖尿病 平均"
+  },
+  {
+    name:"ALT", abbr:"ALT（GPT）",
+    ref:"5〜40 U/L",
+    one:"肝臓の細胞に多く含まれる酵素。肝細胞が傷むと血液中に漏れ出て上がる。",
+    say:["これは肝臓の状態を見る数値です。","肝臓の細胞が傷つくと、この数値が上がります。","お薬やお酒、脂肪肝などが影響することがあります。"],
+    up:["肝硬変など肝疾患","脂肪肝","薬剤性肝障害","ウイルス性肝炎"],
+    dn:["特に問題にならないことが多い"],
+    mine:["ASTとの比を見る。ALT優位は脂肪肝・慢性肝炎を示唆","スタチン、抗真菌薬、抗結核薬の開始時期と照合","上昇時は倦怠感・食欲低下・尿の色を聴取"],
+    tags:["肝機能"],
+    kw:"ALT GPT 肝臓 肝機能 脂肪肝 だるい 薬剤性"
+  }
+];
+
+const norm = s => (s||"").toLowerCase()
+  .replace(/[ぁ-ん]/g, c => String.fromCharCode(c.charCodeAt(0)+0x60))
+  .replace(/[Ａ-Ｚａ-ｚ０-９]/g, c => String.fromCharCode(c.charCodeAt(0)-0xFEE0))
+  .replace(/[ー\-\s]/g,"");
+
+const blob = d => norm([d.name,d.abbr,d.ref,d.one,d.say.join(""),d.up.join(""),d.dn.join(""),d.mine.join(""),d.tags.join(""),d.kw].join(" "));
+
+let activeTag=null, current=DATA[0], memo=[];
+
+// 疾患タグはデータから自動生成（コードに疾患名を書かない）
+function renderTags(){
+  const count={};
+  DATA.forEach(d=>d.tags.forEach(t=>count[t]=(count[t]||0)+1));
+  document.getElementById("tags").innerHTML =
+    Object.entries(count).sort((a,b)=>b[1]-a[1]).map(([t,n])=>
+      `<button class="tag-btn ${activeTag===t?'on':''}" data-tag="${t}">${t}<span class="n">${n}</span></button>`
+    ).join("");
+  document.querySelectorAll("[data-tag]").forEach(b=>b.onclick=()=>{
+    activeTag = activeTag===b.dataset.tag ? null : b.dataset.tag;
+    document.getElementById("search").value="";
+    render();
+  });
+}
+
+function matches(){
+  const q = norm(document.getElementById("search").value.trim());
+  let list = DATA;
+  if(activeTag) list = list.filter(d=>d.tags.includes(activeTag));
+  if(q) list = list.filter(d=>blob(d).includes(q));
+  return list;
+}
+
+function render(){
+  renderTags();
+  const q = document.getElementById("search").value.trim();
+  const list = matches();
+
+  document.getElementById("hits-h").textContent =
+    activeTag ? `「${activeTag}」の検査値　${list.length}件` :
+    q ? `検索結果　${list.length}件` : "検査値から引く";
+
+  document.getElementById("hits").innerHTML = list.map((d,i)=>
+    `<button class="hit ${d.name===current.name?'on':''}" data-i="${i}">
+       <b>${d.name}</b><i>${d.abbr}　${d.tags.join(" / ")}</i></button>`).join("")
+    || `<div style="padding:12px;font-size:13px;color:var(--ink-soft);">該当なし</div>`;
+
+  document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{
+    current = list[+b.dataset.i]; render();
+  });
+
+  const stage=document.getElementById("stage");
+  if(q && list.length===0){ stage.innerHTML=emptyView(q); wireEmpty(q); return; }
+  if(list.length && !list.includes(current)) current=list[0];
+  stage.innerHTML = cardView(current);
+  document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    activeTag=c.textContent; document.getElementById("search").value=""; render();
+  });
+}
+
+function cardView(d){
+  return `<div class="card">
+    <div class="card-head"><h1>${d.name}</h1><span class="abbr">${d.abbr}</span></div>
+    <div class="ref"><span class="lbl">基準値</span><span class="val">${d.ref}</span></div>
+    <div class="ref-warn">※施設により基準値が異なります。検査表の基準値欄を優先してください。</div>
+    <div class="oneline">${d.one}</div>
+
+    <div class="say">
+      <div class="say-lbl">🗣 患者さんへ　—　このまま読み上げられます</div>
+      ${d.say.map(s=>`<p>${s}</p>`).join("")}
+    </div>
+
+    <div class="split">
+      <div class="hl up"><h3>▲ 高いとき</h3><ul>${d.up.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+      <div class="hl dn"><h3>▼ 低いとき</h3><ul>${d.dn.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+    </div>
+
+    <div class="mine">
+      <h3>薬剤師補足 <em>患者さんには言わない</em></h3>
+      <ul>${d.mine.map(x=>`<li>${x}</li>`).join("")}</ul>
+    </div>
+
+    <div class="chips"><span class="lbl">疾患タグ</span>${d.tags.map(t=>`<button class="chip">${t}</button>`).join("")}</div>
+  </div>`;
+}
+
+function emptyView(q){
+  const已 = memo.some(m=>m.q===q);
+  return `<div class="empty">
+    <div class="q">「${q}」は未収載です</div>
+    <div class="sub">まだカードがありません。</div>
+    ${已 ? `<div class="done">✓ 調べる予定リストに追加しました</div>`
+         : `<button class="addbtn" id="addmemo">調べる予定リストに追加</button>`}
+    <div class="why">記録がたまると、そのままこの薬局に必要なカードの<br>優先順位リストになります。CSVで書き出してExcelに追記できます。</div>
+  </div>`;
+}
+
+function wireEmpty(q){
+  const b=document.getElementById("addmemo");
+  if(b) b.onclick=()=>{
+    memo.unshift({q, d:new Date().toLocaleDateString("ja-JP",{month:"2-digit",day:"2-digit"})});
+    renderMemo(); render();
+  };
+}
+
+function renderMemo(){
+  const p=document.getElementById("memo-panel");
+  p.style.display = memo.length ? "block":"none";
+  document.getElementById("memo-list").innerHTML =
+    memo.map(m=>`<div class="memo-row"><span>${m.q}</span><span class="d">${m.d}</span></div>`).join("");
+}
+
+document.getElementById("search").addEventListener("input",()=>{activeTag=null;render();});
+render();
+document.getElementById("search").focus();
+</script>
+</body>
+</html>

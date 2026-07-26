@@ -1,0 +1,16 @@
+{
+  "name": "kensa-value-reference-source",
+  "private": true,
+  "description": "検査値リファレンスアプリのビルド元ソース(initialData.js編集→buildExcel.js/assemble.jsで再生成)",
+  "scripts": {
+    "build:excel": "node buildExcel.js \"../検査値リファレンス初期データ.xlsx\"",
+    "build:html": "node assemble.js \"../検査値リファレンスアプリ.html\"",
+    "build": "npm run build:excel && npm run build:html"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

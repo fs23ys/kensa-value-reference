@@ -1,0 +1,304 @@
+:root {
+  --bg: #F2F4F3;
+  --panel: #FFFFFF;
+  --border: #D3DAD7;
+  --text: #15201E;
+  --text-muted: #5A6B66;
+  --accent: #14524A;
+  --accent-weak: #E3EDEA;
+  --patient-bg: #14524A;
+  --patient-text: #F4F8F7;
+  --pharma-bg: #F5EEDC;
+  --pharma-border: #C9A961;
+  --pharma-label: #6B4A12;
+  --pharma-text: #4A3A16;
+  --high: #8C3A2E;
+  --high-bg: #F7EAE7;
+  --low: #2B4B7A;
+  --low-bg: #E8EDF5;
+  --danger: #8C3A2E;
+  --radius: 4px;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; height: 100%;
+  background: var(--bg); color: var(--text);
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "Meiryo", system-ui, -apple-system, sans-serif;
+  font-feature-settings: "palt";
+  font-size: 15px; line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+button {
+  font-family: inherit; cursor: pointer;
+}
+input[type="text"], input[type="search"] {
+  font-family: inherit;
+}
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ---------- ヘッダー ---------- */
+header.topbar {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+header.topbar h1 {
+  font-size: 15px; font-weight: 700; letter-spacing: .04em;
+  margin: 0; white-space: nowrap; color: var(--accent); line-height: 1.3;
+}
+header.topbar h1.brand span {
+  display: block; font-size: 9px; font-weight: 400; letter-spacing: .12em; color: var(--text-muted); margin-top: 2px;
+}
+.file-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.btn {
+  border: 1px solid var(--border); background: var(--panel); color: var(--text);
+  border-radius: 3px; padding: 7px 13px; font-size: 13px; white-space: nowrap;
+}
+.btn:hover { background: var(--accent-weak); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { background: #0E3D37; }
+.btn.small { padding: 4px 8px; font-size: 12px; }
+.btn.danger { color: var(--danger); border-color: #e3c3bc; }
+.file-status { font-size: 12px; color: var(--text-muted); }
+.file-status strong { color: var(--text); }
+
+.memo-badge {
+  position: relative;
+}
+.memo-count {
+  display: inline-block; min-width: 16px; padding: 0 4px; margin-left: 4px;
+  background: var(--danger); color: #fff; border-radius: 8px; font-size: 11px; line-height: 16px; text-align: center;
+}
+
+/* ---------- 検索バー ---------- */
+.searchbar {
+  padding: 12px 16px; background: var(--panel); border-bottom: 1px solid var(--border);
+  flex-shrink: 0; position: relative;
+}
+.searchbar::before {
+  content: "⌕";
+  position: absolute;
+  left: 30px; top: 50%; transform: translateY(-54%);
+  font-size: 20px; color: var(--accent); pointer-events: none;
+}
+.searchbar input {
+  width: 100%; padding: 10px 12px 10px 38px; font-size: 16px;
+  border: 2px solid var(--accent); border-radius: 3px; outline: none;
+  background: var(--bg); color: var(--text); font-family: inherit;
+}
+.searchbar input:focus { outline: 3px solid var(--accent-weak); outline-offset: 1px; }
+.search-meta { margin-top: 5px; font-size: 12px; color: var(--text-muted); }
+
+/* ---------- メイン2ペイン ---------- */
+main.layout {
+  flex: 1; min-height: 0; display: flex; overflow: hidden;
+  max-width: 1180px; width: 100%; margin: 0 auto;
+}
+.pane-list {
+  width: 360px; min-width: 260px; max-width: 42%; border-right: 1px solid var(--border);
+  background: var(--panel); overflow-y: auto; flex-shrink: 0;
+}
+.pane-detail {
+  flex: 1; overflow-y: auto; padding: 20px 24px 60px; background: var(--bg);
+}
+.section-heading {
+  font-size: 11px; color: var(--text-muted); font-weight: bold; letter-spacing: .1em;
+  padding: 11px 14px 4px; position: sticky; top: 0; background: var(--panel);
+}
+.list-tabs {
+  display: flex; gap: 4px; padding: 10px 14px 6px; position: sticky; top: 0;
+  background: var(--panel); border-bottom: 1px solid var(--border); z-index: 1;
+}
+.tab-btn {
+  flex: 1; border: 1px solid var(--border); background: var(--panel);
+  color: var(--text-muted); border-radius: 3px; padding: 7px 10px; font-size: 13px; font-weight: 600;
+}
+.tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.tab-btn:hover:not(.active) { background: var(--accent-weak); }
+.tab-btn.active[data-tab="lab"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tab-btn.active[data-tab="disease"] { background: var(--pharma-label); border-color: var(--pharma-label); color: #fff; }
+.tab-btn:hover[data-tab="lab"]:not(.active) { background: var(--accent-weak); }
+.tab-btn:hover[data-tab="disease"]:not(.active) { background: var(--pharma-bg); }
+.tab-btn.reorder-toggle-btn { flex: 0 0 auto; background: var(--panel); color: var(--text); }
+.reorder-hint { padding: 6px 14px; font-size: 12px; color: var(--text-muted); background: var(--accent-weak); }
+
+.drag-handle {
+  cursor: grab; color: var(--text-muted); font-size: 15px; padding: 0 8px 0 0; user-select: none; flex-shrink: 0;
+}
+.item-row[draggable="true"] { cursor: grab; }
+.item-row.dragging { opacity: .4; }
+.item-row.drag-over-top { box-shadow: inset 0 2px 0 var(--accent); }
+.item-row.drag-over-bottom { box-shadow: inset 0 -2px 0 var(--accent); }
+.move-btns { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+.move-btn {
+  border: 1px solid var(--border); background: var(--panel); color: var(--text);
+  border-radius: 3px; font-size: 10px; line-height: 1; padding: 3px 6px; cursor: pointer;
+}
+.move-btn:hover { background: var(--accent-weak); }
+ul.item-list { list-style: none; margin: 0; padding: 8px; }
+li.item-row {
+  padding: 9px 10px; border-radius: 3px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+}
+li.item-row:hover { background: var(--accent-weak); }
+li.item-row.selected { background: var(--accent-weak); border-left: 3px solid var(--accent); }
+li.item-row .item-main { flex: 1; min-width: 0; text-align: left; }
+li.item-row .name { font-weight: 600; font-size: 15px; }
+li.item-row .sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+li.item-row .dots { font-size: 11px; letter-spacing: 1px; color: var(--accent); flex-shrink: 0; white-space: nowrap; }
+li.item-row.disease-row .dots { color: var(--pharma-label); }
+li.item-row.disease-row .name::before { content: "疾患 "; font-size: 10px; color: var(--pharma-label); background: var(--pharma-bg); border-radius: 3px; padding: 1px 4px; margin-right: 4px; }
+li.item-row.lab-row .name::before { content: "検査"; font-size: 10px; color: var(--accent); background: var(--accent-weak); border-radius: 3px; padding: 1px 4px; margin-right: 4px; }
+.empty-hint { padding: 20px 14px; color: var(--text-muted); font-size: 13px; }
+
+/* ---------- 検査値カード ---------- */
+.card { max-width: 760px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 28px 30px; }
+.card-top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 2px solid var(--accent); margin-bottom: 0; }
+.card-top .title { font-size: 30px; font-weight: 700; line-height: 1.25; letter-spacing: .01em; }
+.card-top .abbr {
+  font-size: 13px; letter-spacing: .1em; color: var(--accent); background: var(--accent-weak);
+  padding: 3px 9px; border-radius: 3px;
+}
+.edit-toggle-btn { margin-left: auto; }
+.card-refval {
+  font-size: 21px; font-weight: 600; margin: 18px 0 2px; white-space: pre-line;
+  font-variant-numeric: tabular-nums;
+}
+.card-refval::before {
+  content: "基準値"; display: block; font-size: 11px; letter-spacing: .14em; color: var(--text-muted); margin-bottom: 5px; font-weight: 400;
+}
+.card-refval.blank { color: var(--text-muted); font-weight: 400; font-size: 14px; }
+.card-refval.blank::before { content: "基準値"; }
+.ref-note { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.summary-line { font-size: 15px; color: var(--text-muted); margin-top: 18px; margin-bottom: 0; padding-left: 12px; border-left: 2px solid var(--border); }
+.summary-line.blank { color: var(--text-muted); }
+
+.block { margin-top: 20px; margin-bottom: 0; border-radius: var(--radius); padding: 14px 16px; }
+.block-label { font-size: 11px; font-weight: bold; letter-spacing: .1em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.block-body { white-space: pre-line; }
+.block-body.blank { color: var(--text-muted); font-style: normal; }
+
+.block.patient {
+  background: var(--patient-bg); color: var(--patient-text); margin-top: 22px;
+  padding: 20px 24px 22px;
+}
+.block.patient .block-label { color: var(--patient-text); opacity: .72; letter-spacing: .18em; }
+.block.patient .block-label::before { content: "🗣 "; }
+.block.patient .block-body { font-size: 19px; line-height: 2.05; letter-spacing: .02em; }
+
+.block.pharma {
+  background: var(--pharma-bg); border: 1px solid var(--pharma-border); border-left: 5px solid var(--pharma-border);
+  color: var(--pharma-text);
+}
+.block.pharma .block-label { color: var(--pharma-label); }
+.block.pharma .block-body { color: var(--pharma-text); }
+
+.label-badge {
+  display: inline-block; font-style: normal; font-size: 10px; letter-spacing: .06em;
+  background: var(--pharma-label); color: var(--pharma-bg);
+  padding: 2px 7px; border-radius: 2px; vertical-align: 1px;
+}
+
+.hilo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; margin-bottom: 0; }
+@media (max-width: 640px) { .hilo-grid { grid-template-columns: 1fr; } }
+.block.high { background: var(--high-bg); margin-top: 0; }
+.block.high .block-label { color: var(--high); font-size: 13px; }
+.block.low { background: var(--low-bg); margin-top: 0; }
+.block.low .block-label { color: var(--low); font-size: 13px; }
+
+.advice-sub {
+  margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(0,0,0,.12);
+  font-size: 13px; line-height: 1.6;
+}
+.advice-tag {
+  display: inline-block; font-size: 10.5px; font-weight: bold; letter-spacing: .03em;
+  background: rgba(255,255,255,.6); border-radius: 3px; padding: 1px 7px; margin-right: 6px;
+  vertical-align: 1px;
+}
+
+.block.refpage {
+  background: var(--panel); border: 1px dashed var(--border); color: var(--text-muted);
+}
+.block.refpage .block-label::before { content: "📖 "; }
+.block.refpage .block-body:not(.blank) { color: var(--text); }
+
+.tag-row { margin-top: 20px; }
+.tag-row .block-label { color: var(--text-muted); }
+.chip {
+  display: inline-block; background: none; color: var(--accent);
+  border: 1px solid var(--accent); border-radius: 999px; padding: 4px 13px; margin: 3px 4px 3px 0;
+  font-size: 13px; cursor: pointer;
+}
+.chip:hover { background: var(--accent); color: #fff; }
+.chip.disease-chip { background: none; color: var(--pharma-label); border-color: var(--pharma-label); }
+.chip.disease-chip:hover { background: var(--pharma-label); color: #fff; }
+
+.related-list .chip { color: var(--text); border-color: var(--border); }
+.related-list .chip:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ---------- 疾患カード ---------- */
+.disease-header {
+  font-size: 30px; font-weight: 700; line-height: 1.25; letter-spacing: .01em;
+  padding-bottom: 12px; border-bottom: 2px solid var(--pharma-label);
+  display: flex; align-items: center; gap: 10px;
+}
+.disease-header .edit-toggle-btn { font-size: 13px; font-weight: 400; }
+
+/* ---------- アプリ内編集フォーム ---------- */
+.edit-card-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.edit-note {
+  font-size: 12.5px; color: var(--pharma-label); background: var(--pharma-bg); border: 1px solid var(--pharma-border);
+  border-radius: var(--radius); padding: 8px 12px; margin-bottom: 16px;
+}
+.edit-field { margin-bottom: 14px; }
+.edit-field label {
+  display: block; font-size: 12px; font-weight: bold; color: var(--text-muted);
+  margin-bottom: 4px; letter-spacing: .02em;
+}
+.edit-field input[type="text"], .edit-field textarea {
+  width: 100%; font-family: inherit; font-size: 14px; padding: 8px 10px;
+  border: 1.5px solid var(--border); border-radius: var(--radius); resize: vertical; box-sizing: border-box;
+  background: var(--panel); color: var(--text);
+}
+.edit-field input[type="text"]:focus, .edit-field textarea:focus { outline: none; border-color: var(--accent); }
+.edit-readonly { font-size: 13px; color: var(--text-muted); padding: 8px 0; }
+.edit-actions { display: flex; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.qa-line { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+.qa-line:last-child { border-bottom: none; }
+.tone-block { white-space: pre-line; }
+.tone-block .tone-tag { display: inline-block; font-weight: bold; background: var(--accent-weak); color: var(--accent); border-radius: 3px; padding: 1px 8px; margin: 4px 6px 4px 0; }
+
+/* ---------- 未収載メモ ---------- */
+.memo-panel { padding: 16px 20px; max-width: 640px; }
+.memo-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.memo-item .term { font-weight: 600; }
+.memo-item .time { font-size: 12px; color: var(--text-muted); }
+.no-result-box { background: var(--pharma-bg); border: 1px solid var(--pharma-border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+
+.warn-banner {
+  background: var(--high-bg); border-bottom: 1px solid #e3c3bc; color: var(--high);
+  padding: 8px 14px; font-size: 13px; flex-shrink: 0;
+}
+.warn-banner button.btn { margin-left: 10px; }
+
+/* ---------- レスポンシブ(モバイル) ---------- */
+@media (max-width: 820px) {
+  main.layout { position: relative; }
+  .pane-list { width: 100%; max-width: none; border-right: none; }
+  .pane-detail { position: absolute; inset: 0; background: var(--panel); display: none; }
+  .pane-detail.mobile-active { display: block; }
+  .pane-list.mobile-hidden { display: none; }
+  .back-btn { display: inline-block !important; }
+  .card { padding: 20px 18px 24px; }
+  .card-top .title { font-size: 25px; }
+  .disease-header { font-size: 25px; }
+  .block.patient .block-body { font-size: 17px; line-height: 1.95; }
+}
+.back-btn { display: none; margin-bottom: 12px; }
+
+footer.app-footer {
+  font-size: 11px; color: var(--text-muted); text-align: center; padding: 6px; flex-shrink: 0;
+  background: var(--panel); border-top: 1px solid var(--border);
+}

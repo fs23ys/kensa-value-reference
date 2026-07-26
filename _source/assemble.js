@@ -1,0 +1,56 @@
+const fs = require('fs');
+const path = require('path');
+
+const css = fs.readFileSync(path.join(__dirname, 'app.css'), 'utf8');
+const appJs = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+const xlsxLib = fs.readFileSync(path.join(__dirname, 'node_modules/xlsx/dist/xlsx.core.min.js'), 'utf8');
+
+const bodyTop = `<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>検査値リファレンス</title>
+<style>
+${css}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <h1 class="brand">検査値リファレンス<span>KENSA REFERENCE</span></h1>
+    <div class="file-controls">
+      <button class="btn primary" id="btnLoad">Excelを読み込む</button>
+      <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls" style="display:none;">
+      <button class="btn" id="btnExportExcel" style="display:none;">Excelとして書き出す</button>
+      <span class="file-status" id="fileStatus">ファイル未読み込み</span>
+    </div>
+    <div style="flex:1;"></div>
+    <button class="btn memo-badge" id="memoBtn">未収載メモ<span class="memo-count" id="memoCount" style="display:none;"></span></button>
+  </header>
+  <div class="warn-banner" id="warnBanner" style="display:none;"></div>
+  <div class="warn-banner" id="errorBanner" style="display:none;"></div>
+  <div class="searchbar">
+    <input type="text" id="searchInput" placeholder="検査値名・略号・症状・疾患名などで検索（例: alb / アルブミン / むくみ / 糖尿病）" autofocus autocomplete="off">
+    <div class="search-meta" id="searchMeta"></div>
+  </div>
+  <main class="layout">
+    <div class="pane-list" id="paneList"></div>
+    <div class="pane-detail" id="paneDetail"></div>
+  </main>
+  <footer class="app-footer">個人用ツール／データの正本はExcelファイルです／本アプリは検査値の自動判定を行いません。判断は薬剤師が行ってください。</footer>
+</div>
+<script>
+// ===== SheetJS (xlsx) — オフライン動作のためライブラリ本体をこのファイルに内包 =====
+${xlsxLib}
+</script>
+<script>
+${appJs}
+</script>
+</body>
+</html>
+`;
+
+const outPath = process.argv[2];
+fs.writeFileSync(outPath, bodyTop, 'utf8');
+console.log('written:', outPath, 'size(KB):', (Buffer.byteLength(bodyTop, 'utf8') / 1024).toFixed(1));
