@@ -228,7 +228,8 @@
         labRaw: rawWorkbookJson.labRaw,
         diseaseRaw: rawWorkbookJson.diseaseRaw,
         diseaseSheetFound: rawWorkbookJson.diseaseSheetFound,
-        editedLocally: !!rawWorkbookJson.editedLocally
+        editedLocally: !!rawWorkbookJson.editedLocally,
+        bundledVersion: rawWorkbookJson.bundledVersion || null
       }));
     } catch (e) {
       console.warn('localStorage保存に失敗しました', e);
@@ -997,6 +998,39 @@
     }
   }
 
+  // アプリに内蔵された最新データ(assemble.js実行時点のinitialData.js内容)を読み込む
+  function loadFromBundled(bundled) {
+    try {
+      var wb = { SheetNames: [], Sheets: {} };
+      wb.SheetNames.push(LAB_SHEET_NAME);
+      wb.Sheets[LAB_SHEET_NAME] = aoaToSheet(bundled.labRaw);
+      wb.SheetNames.push(DISEASE_SHEET_NAME);
+      wb.Sheets[DISEASE_SHEET_NAME] = aoaToSheet(bundled.diseaseRaw);
+      var parsed = parseWorkbook(wb);
+      state.labRawRows = parsed.labRawRows;
+      state.diseaseRawRows = parsed.diseaseRawRows;
+      state.labRows = parsed.labRows;
+      state.diseaseList = parsed.diseaseList;
+      state.missingLabCols = parsed.missingLabCols;
+      state.missingDiseaseCols = parsed.missingDiseaseCols;
+      state.fileName = '検査値リファレンス初期データ（アプリ内蔵・最新）';
+      state.loadedAt = new Date().toISOString();
+      state.hasData = true;
+      state.editedLocally = false;
+      saveWorkbookToStorage({
+        labRaw: bundled.labRaw,
+        diseaseRaw: bundled.diseaseRaw,
+        diseaseSheetFound: true,
+        editedLocally: false,
+        bundledVersion: bundled.version
+      }, state.fileName);
+      return true;
+    } catch (e) {
+      console.warn('内蔵データの読み込みに失敗しました', e);
+      return false;
+    }
+  }
+
   function afterDataReady() {
     updateFileStatus();
     updateWarnBanner();
@@ -1070,7 +1104,11 @@
     });
     el.memoBtn.addEventListener('click', renderMemoPanel);
 
-    var restored = restoreFromStorage();
+    var bundled = window.__BUNDLED__;
+    var saved = loadWorkbookFromStorage();
+    var useBundled = !!bundled && (!saved || !saved.labRaw || (!saved.editedLocally && saved.bundledVersion !== bundled.version));
+
+    var restored = useBundled ? loadFromBundled(bundled) : restoreFromStorage();
     if (restored) {
       afterDataReady();
     } else {

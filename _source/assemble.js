@@ -1,9 +1,23 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const { LAB_COLUMNS, DISEASE_COLUMNS, labRows, diseaseRows } = require('./initialData');
 
 const css = fs.readFileSync(path.join(__dirname, 'app.css'), 'utf8');
 const appJs = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
 const xlsxLib = fs.readFileSync(path.join(__dirname, 'node_modules/xlsx/dist/xlsx.core.min.js'), 'utf8');
+
+// initialData.js の現在の内容を、アプリ起動時の初期表示用データとして埋め込む(Excel未読み込みでも最新データが見える)
+function rowsToAOA(columns, rows) {
+  const aoa = [columns];
+  rows.forEach(r => aoa.push(columns.map(c => (r[c] !== undefined ? r[c] : ''))));
+  return aoa;
+}
+const bundledLabRaw = rowsToAOA(LAB_COLUMNS, labRows);
+const bundledDiseaseRaw = rowsToAOA(DISEASE_COLUMNS, diseaseRows);
+const bundledJson = JSON.stringify({ labRaw: bundledLabRaw, diseaseRaw: bundledDiseaseRaw });
+const bundledVersion = crypto.createHash('sha1').update(bundledJson).digest('hex').slice(0, 12);
+const bundledScript = 'window.__BUNDLED__ = Object.assign(' + bundledJson + ', { version: ' + JSON.stringify(bundledVersion) + ' });';
 
 const bodyTop = `<!doctype html>
 <html lang="ja">
@@ -43,6 +57,9 @@ ${css}
 <script>
 // ===== SheetJS (xlsx) — オフライン動作のためライブラリ本体をこのファイルに内包 =====
 ${xlsxLib}
+</script>
+<script>
+${bundledScript}
 </script>
 <script>
 ${appJs}
