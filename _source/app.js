@@ -1128,6 +1128,15 @@
     var saved = loadWorkbookFromStorage();
     var useBundled = !!bundled && (!saved || !saved.labRaw || (!saved.editedLocally && saved.bundledVersion !== bundled.version));
 
+    if (useBundled) {
+      // データを最新の内蔵データに更新する際は、古い並び替え設定(前のデータ構成に基づくキー順)も
+      // 一緒にリセットする。そうしないと内蔵データ側で整えた並び順が、古い並び替え設定に上書きされてしまう。
+      state.labOrder = [];
+      state.diseaseOrder = [];
+      saveOrder(LS_LAB_ORDER, []);
+      saveOrder(LS_DISEASE_ORDER, []);
+    }
+
     var restored = useBundled ? loadFromBundled(bundled) : restoreFromStorage();
     if (restored) {
       afterDataReady();
