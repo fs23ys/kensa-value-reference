@@ -954,15 +954,22 @@ window.__BUNDLED__ = Object.assign({"labRaw":[["検査値名","略号","基準�
 
   function saveLabEdit(row) {
     var raw = row.raw;
+    var oldKey = row.key;
     readEditFields(el.paneDetail, raw);
     var derived = buildDerived(state.labRawRows, state.diseaseRawRows);
     state.labRows = derived.labRows;
     state.diseaseList = derived.diseaseList;
     state.cardEditMode = false;
+    var newRow = state.labRows.filter(function (r) { return r.raw === raw; })[0];
+    // 検査値名の変更でキーが変わった場合、並び替え設定(labOrder)内の古いキーを新しいキーに置き換え、
+    // 並び順が崩れて末尾に飛ばされないようにする
+    if (newRow && newRow.key !== oldKey) {
+      state.labOrder = state.labOrder.map(function (k) { return k === oldKey ? newRow.key : k; });
+      saveOrder(LS_LAB_ORDER, state.labOrder);
+    }
     persistCurrentDataToStorage();
     updateFileStatus();
     renderList();
-    var newRow = state.labRows.filter(function (r) { return r.raw === raw; })[0];
     if (newRow) selectLabByKey(newRow.key);
     else el.paneDetail.innerHTML = '<div class="empty-hint">左の一覧から選び直してください。</div>';
   }
@@ -996,6 +1003,7 @@ window.__BUNDLED__ = Object.assign({"labRaw":[["検査値名","略号","基準�
   function saveDiseaseEdit(entry) {
     var raw = entry.sheetRow;
     var isNew = !raw;
+    var oldKey = entry.key;
     if (isNew) {
       raw = {};
       DISEASE_COLUMNS.forEach(function (c) { raw[c] = ''; });
@@ -1007,11 +1015,16 @@ window.__BUNDLED__ = Object.assign({"labRaw":[["検査値名","略号","基準�
     state.labRows = derived.labRows;
     state.diseaseList = derived.diseaseList;
     state.cardEditMode = false;
+    var newName = raw['疾患名'].trim();
+    var newEntry = state.diseaseList.filter(function (d) { return d.name === newName; })[0];
+    // 疾患名の変更でキーが変わった場合、並び替え設定(diseaseOrder)内の古いキーを新しいキーに置き換える
+    if (newEntry && newEntry.key !== oldKey) {
+      state.diseaseOrder = state.diseaseOrder.map(function (k) { return k === oldKey ? newEntry.key : k; });
+      saveOrder(LS_DISEASE_ORDER, state.diseaseOrder);
+    }
     persistCurrentDataToStorage();
     updateFileStatus();
     renderList();
-    var newName = raw['疾患名'].trim();
-    var newEntry = state.diseaseList.filter(function (d) { return d.name === newName; })[0];
     if (newEntry) selectDiseaseByKey(newEntry.key);
     else el.paneDetail.innerHTML = '<div class="empty-hint">左の一覧から選び直してください。</div>';
   }
