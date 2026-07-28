@@ -1417,11 +1417,18 @@ window.__BUNDLED__ = Object.assign({"labRaw":[["検査値名","略号","基準�
 
   // アプリ内編集も含めた現在のデータを新しい.xlsxとしてダウンロードする(他端末への手動反映用)
   function exportWorkbook() {
+    // 並び替え(ドラッグ&ドロップ/▲▼)は表示順のみに反映され生データの順序は変わらないため、
+    // 書き出し時は現在の表示順(labOrder/diseaseOrder)を適用してから出力する。
+    var orderedLabRaw = applyOrder(state.labRows, state.labOrder).map(function (l) { return l.raw; });
+    var orderedDiseaseRaw = applyOrder(state.diseaseList, state.diseaseOrder)
+      .map(function (d) { return d.sheetRow; })
+      .filter(Boolean);
+
     var wb = { SheetNames: [], Sheets: {} };
     wb.SheetNames.push(LAB_SHEET_NAME);
-    wb.Sheets[LAB_SHEET_NAME] = aoaToSheet(rowsToAOA(LAB_COLUMNS, state.labRawRows));
+    wb.Sheets[LAB_SHEET_NAME] = aoaToSheet(rowsToAOA(LAB_COLUMNS, orderedLabRaw));
     wb.SheetNames.push(DISEASE_SHEET_NAME);
-    wb.Sheets[DISEASE_SHEET_NAME] = aoaToSheet(rowsToAOA(DISEASE_COLUMNS, state.diseaseRawRows));
+    wb.Sheets[DISEASE_SHEET_NAME] = aoaToSheet(rowsToAOA(DISEASE_COLUMNS, orderedDiseaseRaw));
     var d = new Date();
     var pad = function (n) { return (n < 10 ? '0' : '') + n; };
     var fname = '検査値リファレンス_' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '_' + pad(d.getHours()) + pad(d.getMinutes()) + '.xlsx';
