@@ -37,6 +37,7 @@ ${css}
       <button class="btn primary" id="btnLoad">Excelを読み込む</button>
       <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls" style="display:none;">
       <button class="btn" id="btnExportExcel" style="display:none;">Excelとして書き出す</button>
+      <button class="btn" id="btnUseBundled" style="display:none;">最新の内蔵データに更新</button>
       <span class="file-status" id="fileStatus">ファイル未読み込み</span>
     </div>
     <div style="flex:1;"></div>

@@ -297,6 +297,7 @@
     el.fileInput = document.getElementById('fileInput');
     el.btnLoad = document.getElementById('btnLoad');
     el.btnExportExcel = document.getElementById('btnExportExcel');
+    el.btnUseBundled = document.getElementById('btnUseBundled');
     el.fileStatus = document.getElementById('fileStatus');
     el.warnBanner = document.getElementById('warnBanner');
     el.errorBanner = document.getElementById('errorBanner');
@@ -1058,12 +1059,14 @@
       el.fileStatus.innerHTML = 'ファイル未読み込み';
       el.btnLoad.textContent = 'Excelを読み込む';
       el.btnExportExcel.style.display = 'none';
+      el.btnUseBundled.style.display = 'none';
       return;
     }
     el.fileStatus.innerHTML = '<strong>' + esc(state.fileName) + '</strong>　検査値' + state.labRows.length + '件／疾患' + state.diseaseList.length + '件　（読込: ' + fmtDateTime(state.loadedAt) + '）' +
       (state.editedLocally ? '　<span style="color:#8a6a12;">※このブラウザ内で編集済み(Excel未反映)</span>' : '');
     el.btnLoad.textContent = 'Excelを読み込み直す';
     el.btnExportExcel.style.display = '';
+    el.btnUseBundled.style.display = window.__BUNDLED__ ? '' : 'none';
   }
 
   // アプリ内編集も含めた現在のデータを新しい.xlsxとしてダウンロードする(他端末への手動反映用)
@@ -1118,6 +1121,19 @@
       e.target.value = '';
     });
     el.btnExportExcel.addEventListener('click', exportWorkbook);
+    el.btnUseBundled.addEventListener('click', function () {
+      if (!window.__BUNDLED__) return;
+      var msg = state.editedLocally
+        ? 'この端末で行った✎編集の内容が失われます。最新の内蔵データに更新しますか？'
+        : '表示中のデータを、このHTMLに内蔵されている最新データで上書きします。よろしいですか？';
+      if (!window.confirm(msg)) return;
+      state.labOrder = [];
+      state.diseaseOrder = [];
+      saveOrder(LS_LAB_ORDER, []);
+      saveOrder(LS_DISEASE_ORDER, []);
+      loadFromBundled(window.__BUNDLED__);
+      afterDataReady();
+    });
     el.searchInput.addEventListener('input', function (e) {
       state.query = e.target.value;
       renderList();
