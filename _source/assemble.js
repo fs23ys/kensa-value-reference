@@ -6,6 +6,7 @@ const { LAB_COLUMNS, DISEASE_COLUMNS, labRows, diseaseRows } = require('./initia
 const css = fs.readFileSync(path.join(__dirname, 'app.css'), 'utf8');
 const appJs = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
 const xlsxLib = fs.readFileSync(path.join(__dirname, 'node_modules/xlsx/dist/xlsx.core.min.js'), 'utf8');
+const faviconBase64 = fs.readFileSync(path.join(__dirname, 'favicon.png')).toString('base64');
 
 // initialData.js の現在の内容を、アプリ起動時の初期表示用データとして埋め込む(Excel未読み込みでも最新データが見える)
 function rowsToAOA(columns, rows) {
@@ -25,6 +26,7 @@ const bodyTop = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>検査値リファレンス</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,${faviconBase64}">
 <style>
 ${css}
 </style>
