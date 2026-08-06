@@ -18,7 +18,11 @@ const bundledLabRaw = rowsToAOA(LAB_COLUMNS, labRows);
 const bundledDiseaseRaw = rowsToAOA(DISEASE_COLUMNS, diseaseRows);
 const bundledJson = JSON.stringify({ labRaw: bundledLabRaw, diseaseRaw: bundledDiseaseRaw });
 const bundledVersion = crypto.createHash('sha1').update(bundledJson).digest('hex').slice(0, 12);
-const bundledScript = 'window.__BUNDLED__ = Object.assign(' + bundledJson + ', { version: ' + JSON.stringify(bundledVersion) + ' });';
+// builtAt: このビルドを実行した時刻。ブラウザが何らかの理由で古いキャッシュ済みHTMLを読み込んでしまった場合に、
+// 「内容が違う」だけでなく「今持っているデータより新しいか」を判定できるようにするためのタイムスタンプ。
+// これが無いと、古いHTMLが誤って読み込まれた際に新しいデータが古いデータで上書きされてしまう(逆行)。
+const builtAt = Date.now();
+const bundledScript = 'window.__BUNDLED__ = Object.assign(' + bundledJson + ', { version: ' + JSON.stringify(bundledVersion) + ', builtAt: ' + builtAt + ' });';
 
 const bodyTop = `<!doctype html>
 <html lang="ja">

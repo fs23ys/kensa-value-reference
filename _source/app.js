@@ -229,7 +229,8 @@
         diseaseRaw: rawWorkbookJson.diseaseRaw,
         diseaseSheetFound: rawWorkbookJson.diseaseSheetFound,
         editedLocally: !!rawWorkbookJson.editedLocally,
-        bundledVersion: rawWorkbookJson.bundledVersion || null
+        bundledVersion: rawWorkbookJson.bundledVersion || null,
+        bundledBuiltAt: rawWorkbookJson.bundledBuiltAt || null
       }));
     } catch (e) {
       console.warn('localStorage保存に失敗しました', e);
@@ -1036,7 +1037,8 @@
         diseaseRaw: bundled.diseaseRaw,
         diseaseSheetFound: true,
         editedLocally: false,
-        bundledVersion: bundled.version
+        bundledVersion: bundled.version,
+        bundledBuiltAt: bundled.builtAt
       }, state.fileName);
       return true;
     } catch (e) {
@@ -1142,7 +1144,11 @@
 
     var bundled = window.__BUNDLED__;
     var saved = loadWorkbookFromStorage();
-    var useBundled = !!bundled && (!saved || !saved.labRaw || (!saved.editedLocally && saved.bundledVersion !== bundled.version));
+    // 「バージョンが違うから更新」ではなく「今のデータより新しい(builtAtが大きい)から更新」で判定する。
+    // ブラウザのキャッシュ等で偶然古いHTMLが読み込まれても、保存済みの新しいデータが古いデータで
+    // 上書きされて逆行してしまうことがないようにするため。
+    var bundledIsNewer = !saved || !saved.bundledBuiltAt || (bundled && bundled.builtAt > saved.bundledBuiltAt);
+    var useBundled = !!bundled && (!saved || !saved.labRaw || (!saved.editedLocally && saved.bundledVersion !== bundled.version && bundledIsNewer));
 
     if (useBundled) {
       // データを最新の内蔵データに更新する際は、古い並び替え設定(前のデータ構成に基づくキー順)も
