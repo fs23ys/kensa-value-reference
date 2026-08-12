@@ -217,8 +217,8 @@ li.item-row.lab-row .name::before { content: "検査"; font-size: 10px; color: v
   background: rgba(255,255,255,.6); border-radius: 3px; padding: 1px 7px; margin-right: 6px;
   vertical-align: 1px;
 }
-.drug-sub { border-top-color: rgba(140,58,46,.35); }
-.drug-tag { background: var(--danger); color: #fff; }
+.block.drugcaution { background: var(--high-bg); border: 1px solid rgba(140,58,46,.22); margin-top: 0; }
+.block.drugcaution .block-label { color: var(--high); font-size: 13px; }
 
 .block.refpage {
   background: var(--panel); border: 1px dashed var(--border); color: var(--text-muted);

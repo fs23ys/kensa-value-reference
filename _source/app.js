@@ -3,7 +3,7 @@
 
   // ============ 定数 ============
   // 列名は指示書のExcel構造に合わせる。この配列以外に検査値名・疾患名はコード中に一切書かない。
-  var LAB_COLUMNS = ['検査値名', '略号', '基準値', '一行要約', '患者説明例', '高値で考えること', '高値の時のアドバイス', '高値の時に注意する薬', '低値で考えること', '低値の時のアドバイス', '薬剤師補足', '疾患タグ', '検索キーワード', '参考ページ'];
+  var LAB_COLUMNS = ['検査値名', '略号', '基準値', '一行要約', '患者説明例', '高値で考えること', '高値の時のアドバイス', '高値の時に注意する薬', '低値で考えること', '低値の時のアドバイス', '低値の時に注意する薬', '薬剤師補足', '疾患タグ', '検索キーワード', '参考ページ'];
   var DISEASE_COLUMNS = ['疾患名', '確認すべき検査値', '聞くこと', '声のかけ方', '見落としやすい点', '参考ページ'];
   var LAB_FULLNESS_COLS = ['基準値', '一行要約', '患者説明例', '高値で考えること', '低値で考えること'];
   var DISEASE_FULLNESS_COLS = ['聞くこと', '声のかけ方', '見落としやすい点'];
@@ -531,16 +531,13 @@
   }
 
   // ============ フィールド表示ヘルパー(高値/低値 + アドバイス併記) ============
-  function hiloBlock(label, diagVal, adviceVal, cls, drugVal) {
+  function hiloBlock(label, diagVal, adviceVal, cls) {
     var blank = !diagVal;
     var html = '<div class="block ' + cls + '">';
     html += '<div class="block-label">' + esc(label) + '</div>';
     html += '<div class="block-body' + (blank ? ' blank' : '') + '">' + (blank ? '未記入' : esc(diagVal)) + '</div>';
     if (adviceVal) {
       html += '<div class="advice-sub"><span class="advice-tag">アドバイス</span>' + esc(adviceVal) + '</div>';
-    }
-    if (drugVal) {
-      html += '<div class="advice-sub drug-sub"><span class="advice-tag drug-tag">要注意の薬</span>' + esc(drugVal) + '</div>';
     }
     html += '</div>';
     return html;
@@ -551,7 +548,7 @@
     '検査値名': 'input', '略号': 'input', '基準値': 'textarea-s',
     '一行要約': 'textarea-s', '患者説明例': 'textarea-l',
     '高値で考えること': 'textarea-s', '高値の時のアドバイス': 'textarea-s', '高値の時に注意する薬': 'textarea-s',
-    '低値で考えること': 'textarea-s', '低値の時のアドバイス': 'textarea-s',
+    '低値で考えること': 'textarea-s', '低値の時のアドバイス': 'textarea-s', '低値の時に注意する薬': 'textarea-s',
     '薬剤師補足': 'textarea-m', '疾患タグ': 'input', '検索キーワード': 'input', '参考ページ': 'input'
   };
   var DISEASE_FIELD_TYPES = {
@@ -692,7 +689,7 @@
     html += fieldBlock('患者説明例（そのまま声に出せます）', raw['患者説明例'], 'patient');
 
     html += '<div class="hilo-grid">';
-    html += hiloBlock('▲ 高いとき', raw['高値で考えること'], raw['高値の時のアドバイス'], 'high', raw['高値の時に注意する薬']);
+    html += hiloBlock('▲ 高いとき', raw['高値で考えること'], raw['高値の時のアドバイス'], 'high');
     html += hiloBlock('▼ 低いとき', raw['低値で考えること'], raw['低値の時のアドバイス'], 'low');
     html += '</div>';
 
@@ -720,6 +717,13 @@
     html += '</div>';
 
     html += fieldBlock('参考ページ（書籍）', raw['参考ページ'], 'refpage');
+
+    if (raw['高値の時に注意する薬'] || raw['低値の時に注意する薬']) {
+      html += '<div class="hilo-grid drug-caution-grid">';
+      html += fieldBlock('高値のとき注意する薬', raw['高値の時に注意する薬'], 'drugcaution');
+      html += fieldBlock('低値のとき注意する薬', raw['低値の時に注意する薬'], 'drugcaution');
+      html += '</div>';
+    }
 
     html += '</div>';
     el.paneDetail.innerHTML = html;
