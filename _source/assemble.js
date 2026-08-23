@@ -39,15 +39,15 @@ ${css}
 <div id="app">
   <header class="topbar">
     <h1 class="brand">検査値リファレンス<span>KENSA REFERENCE</span></h1>
-    <div class="file-controls">
+    <button class="btn small file-toggle-btn" id="btnFileToggle" aria-expanded="false">データ管理</button>
+    <div class="file-controls" id="fileControls">
       <button class="btn primary" id="btnLoad">Excelを読み込む</button>
       <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls" style="display:none;">
       <button class="btn" id="btnExportExcel" style="display:none;">Excelとして書き出す</button>
       <button class="btn" id="btnUseBundled" style="display:none;">最新の内蔵データに更新</button>
       <span class="file-status" id="fileStatus">ファイル未読み込み</span>
     </div>
-    <div style="flex:1;"></div>
-    <button class="btn memo-badge" id="memoBtn">未収載メモ<span class="memo-count" id="memoCount" style="display:none;"></span></button>
+    <button class="btn memo-badge" id="memoBtn" style="margin-left:auto;">未収載メモ<span class="memo-count" id="memoCount" style="display:none;"></span></button>
   </header>
   <div class="warn-banner" id="warnBanner" style="display:none;"></div>
   <div class="warn-banner" id="errorBanner" style="display:none;"></div>

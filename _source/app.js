@@ -308,6 +308,8 @@
     el.paneDetail = document.getElementById('paneDetail');
     el.memoBtn = document.getElementById('memoBtn');
     el.memoCount = document.getElementById('memoCount');
+    el.btnFileToggle = document.getElementById('btnFileToggle');
+    el.fileControls = document.getElementById('fileControls');
   }
 
   // ============ 描画: リスト ============
@@ -1148,6 +1150,11 @@
       renderList();
     });
     el.memoBtn.addEventListener('click', renderMemoPanel);
+    el.btnFileToggle.addEventListener('click', function () {
+      var opened = el.fileControls.classList.toggle('open');
+      el.btnFileToggle.setAttribute('aria-expanded', opened ? 'true' : 'false');
+      el.btnFileToggle.classList.toggle('open', opened);
+    });
 
     var bundled = window.__BUNDLED__;
     var saved = loadWorkbookFromStorage();
